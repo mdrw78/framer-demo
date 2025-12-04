@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESTATES - Prime Properties</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Six+Caps&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- GSAP & Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
+
+    <style>
+        /* --- CSS Reset & Base Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-sidebar: #ffffff;
+            --text-main: #1a1a1a;
+            --text-nav: #333333;
+            --text-secondary: #555555;
+            --btn-dark: #1a1a1a;
+            --btn-light: #ffffff;
+            --card-bg-light: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            --pill-bg: #f3f3f3;
+            --pill-bg-hover: #e2e2e2;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            height: 100vh;
+            display: flex;
+            background-color: var(--bg-sidebar);
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        /* --- Sidebar Section --- */
+        .sidebar {
+            width: 280px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-family: 'Six Caps', sans-serif;
+            font-size: 8rem;
+            line-height: 0.8;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            font-size: 1.1rem;
+            align-items: flex-start;
+            margin-left: 10px;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--text-nav);
+            transition: color 0.3s;
+            font-weight: 400;
+        }
+
+        .nav-links li a:hover {
+            color: #000;
+            font-weight: 600;
+        }
+
+        .socials {
+            display: flex;
+            gap: 20px;
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+
+        .socials i {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .socials i:hover {
+            transform: translateY(-3px);
+        }
+
+        /* --- Main Content Container --- */
+        .main-content {
+            flex-grow: 1;
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 60px; /* Consistent large gap between sections */
+            padding: 20px 20px 40px 0;
+            scroll-behavior: smooth;
+        }
+
+        /* Generic Section Title Style */
+        .section-heading {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+        
+        /* Flex header for sections with "View All" button */
+        .section-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .section-header-flex h2 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .view-all-btn {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+        
+        .view-all-btn:hover {
+            background-color: #333;
+        }
+
+        /* --- 1. Hero Section --- */
+        .hero-section {
+            height: calc(100vh - 40px);
+            width: 100%;
+            border-radius: 30px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%; /* Taller for parallax */
+            background-image: url('https://images.unsplash.com/photo-1600596542815-2a4d9f6facb8?q=80&w=2669&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 60%);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            padding-left: 60px;
+            color: white;
+            max-width: 800px;
+            margin-top: auto;
+            margin-bottom: 80px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.1;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        }
+        
+        .char {
+            display: inline-block;
+        }
+
+        p.subtext {
+            font-size: 1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-dark {
+            background-color: #222;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-light {
+            background-color: white;
+            color: #1a1a1a;
+        }
+
+        .floating-controls {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+            z-index: 10;
+        }
+
+        .control-btn {
+            background: black;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Manrope', sans-serif;
+        }
+        
+        .control-btn.white {
+            background: white;
+            color: black;
+        }
+
+        /* --- 2. Stats Section --- */
+        .stats-section {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .stat-card {
+            flex: 1;
+            border-radius: 30px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .stat-card.revenue {
+            background: var(--card-bg-light);
+            color: var(--text-main);
+        }
+        
+        .revenue-icon {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 1.2rem;
+            color: #aaa;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .stat-card.gallery {
+            background-image: url('https://images.unsplash.com/photo-1613553507747-5f8d62ad5904?q=80&w=2670&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+
+        .stat-card.gallery::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%);
+        }
+        
+        .gallery-title {
+            position: relative;
+            z-index: 2;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-card.locations {
+            background: var(--card-bg-light);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding-right: 0;
+        }
+
+        .locations-content {
+            padding-right: 20px;
+            z-index: 2;
+        }
+
+        .locations-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .locations-list {
+            list-style: none;
+            font-size: 1.1rem;
+            color: #555;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .globe-graphic {
+            height: 100%;
+            width: 150px;
+            background: radial-gradient(circle at right, #cccccc, transparent 70%);
+            opacity: 0.5;
+            mask-image: linear-gradient(to left, black 60%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
+        }
+
+        /* --- 3. New Listings Section --- */
+        .listings-section {
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .listings-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .listing-card {
+            height: 400px;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .listing-card:hover {
+            transform: scale(1.02);
+        }
+
+        .listing-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .listing-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .listing-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            display: flex;
+            align-items: flex-end;
+            padding: 30px;
+        }
+
+        .listing-title {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        /* --- 4. "We Are" Section --- */
+        .we-are-section {
+            width: 100%;
+            flex-shrink: 0;
+        }
+        
+        .services-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .service-item {
+            background-color: var(--pill-bg);
+            padding: 25px 35px;
+            border-radius: 100px; /* Pill shape */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        
+        .service-item:hover {
+            background-color: var(--pill-bg-hover);
+            transform: scale(1.01);
+        }
+        
+        .service-text {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: var(--text-main);
+        }
+        
+        .service-icon {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            opacity: 0.8;
+        }
+
+        /* --- 5. "Our Clients" Section --- */
+        .clients-section {
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .clients-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .client-card {
+            background: var(--card-bg-light);
+            border-radius: 30px;
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 300px;
+            transition: transform 0.2s ease;
+        }
+        
+        .client-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .testimonial-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            font-weight: 400;
+        }
+
+        .client-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: auto;
+        }
+
+        .client-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .client-meta h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .stars {
+            color: var(--text-main);
+            font-size: 0.8rem;
+            display: flex;
+            gap: 3px;
+        }
+
+        /* --- 6. "Our Blogs" Section (NEW) --- */
+        .blogs-section {
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .blogs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .blog-card {
+            height: 380px;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .blog-card:hover {
+            transform: scale(1.02);
+        }
+        
+        .blog-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .blog-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .blog-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 30px;
+        }
+        
+        .blog-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .blog-meta span i {
+            margin-right: 5px;
+        }
+        
+        .blog-title {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        /* --- Footer --- */
+        .site-footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .footer-links a {
+            color: #999;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--text-main);
+        }
+
+        /* --- Mobile Responsive --- */
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                overflow-y: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                align-items: center;
+                padding: 20px;
+            }
+
+            .logo {
+                font-size: 4rem;
+            }
+
+            .nav-links, .socials {
+                display: none;
+            }
+
+            .main-content {
+                padding: 20px;
+                height: auto;
+                overflow: visible;
+                gap: 40px;
+            }
+            
+            .hero-section {
+                height: 70vh;
+                border-radius: 20px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .stats-section, .listings-grid, .clients-grid, .blogs-grid {
+                flex-direction: column;
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card {
+                border-radius: 20px;
+                min-height: 200px;
+            }
+            
+            .listing-card, .blog-card {
+                height: 300px;
+                border-radius: 20px;
+            }
+            
+            .section-heading, .section-header-flex h2 {
+                font-size: 2.5rem;
+            }
+            
+            .site-footer {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+        
+        /* --- Dark Mode State --- */
+        body.dark-mode {
+            --bg-sidebar: #121212;
+            --text-main: #ffffff;
+            --text-nav: #cccccc;
+            --text-secondary: #aaaaaa;
+            --card-bg-light: #1e1e1e;
+            --pill-bg: #1e1e1e;
+            --pill-bg-hover: #333333;
+        }
+        
+        body.dark-mode .nav-links li a:hover {
+            color: white;
+        }
+        
+        body.dark-mode .view-all-btn {
+            background-color: white;
+            color: black;
+        }
+        
+        body.dark-mode .site-footer {
+            border-top: 1px solid #333;
+        }
+
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">ESTATES</div>
+        
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Properties</a></li>
+            <li><a href="#">Gallery</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Blogs</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+
+        <div class="socials">
+            <i class="fab fa-instagram"></i>
+            <i class="fa-brands fa-x-twitter"></i>
+            <i class="fab fa-facebook-f"></i>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <section class="hero-section">
+            <div class="hero-bg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">The Gateway to Prime Properties</h1>
+                <p class="subtext">Turning Vision into Reality, Your Trusted Partner in Real Estate Excellence.</p>
+                
+                <div class="cta-group">
+                    <button class="btn btn-dark">Our Properties</button>
+                    <button class="btn btn-light">
+                        Inquire now! 
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="floating-controls">
+                <button class="control-btn" onclick="toggleDarkMode()">
+                    <i class="fa-solid fa-moon"></i> Dark Mode
+                </button>
+                <button class="control-btn">
+                    <i class="fa-solid fa-cart-shopping"></i> Buy Template
+                </button>
+                <button class="control-btn white">
+                    <i class="fa-solid fa-bolt"></i> Made in Framer
+                </button>
+            </div>
+        </section>
+
+        <section class="stats-section">
+            <div class="stat-card revenue">
+                <div class="revenue-icon">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                </div>
+                <div class="stat-number">100M+</div>
+                <div class="stat-label">Revenue Generated</div>
+            </div>
+
+            <div class="stat-card gallery">
+                <div class="gallery-title">Our Gallery</div>
+            </div>
+
+            <div class="stat-card locations">
+                <div class="locations-content">
+                    <div class="locations-title">Our Locations</div>
+                    <ul class="locations-list">
+                        <li>France</li>
+                        <li>Germany</li>
+                        <li>Switzerland</li>
+                    </ul>
+                </div>
+                <div class="globe-graphic"></div>
+            </div>
+        </section>
+        
+        <section class="listings-section">
+            <div class="section-header-flex">
+                <h2>New Listings</h2>
+                <a href="#" class="view-all-btn">View All</a>
+            </div>
+            
+            <div class="listings-grid">
+                <div class="listing-card">
+                    <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2653&auto=format&fit=crop" alt="Opulence">
+                    <div class="listing-overlay">
+                        <span class="listing-title">Opulence</span>
+                    </div>
+                </div>
+
+                <div class="listing-card">
+                    <img src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=2584&auto=format&fit=crop" alt="Prestige">
+                    <div class="listing-overlay">
+                        <span class="listing-title">Prestige</span>
+                    </div>
+                </div>
+
+                <div class="listing-card">
+                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2670&auto=format&fit=crop" alt="Harmony">
+                    <div class="listing-overlay">
+                        <span class="listing-title">Harmony</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="we-are-section">
+            <h2 class="section-heading">We Are</h2>
+            <div class="services-list">
+                <div class="service-item">
+                    <span class="service-text">Real Estate Consultants</span>
+                    <i class="fa-regular fa-comments service-icon"></i>
+                </div>
+                <div class="service-item">
+                    <span class="service-text">Buying Real Estate</span>
+                    <i class="fa-solid fa-cart-shopping service-icon"></i>
+                </div>
+                <div class="service-item">
+                    <span class="service-text">Selling Real Estate</span>
+                    <i class="fa-regular fa-handshake service-icon"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="clients-section">
+            <h2 class="section-heading">Our Clients</h2>
+            <div class="clients-grid">
+                
+                <div class="client-card">
+                    <p class="testimonial-text">"Estates provided me with an exceptional real estate solution that perfectly aligned with my high standards and ambitious goals. Their team was professional, forward-thinking, and delivered exactly what I needed."</p>
+                    <div class="client-profile">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Sarah G.">
+                        <div class="client-meta">
+                            <h4>Sarah G.</h4>
+                            <div class="stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <p class="testimonial-text">"Estates provided exceptional service in helping me secure the ideal location. Their expertise and commitment to finding the right fit made the process straightforward and efficient. I highly recommend Estates."</p>
+                    <div class="client-profile">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Chris L.">
+                        <div class="client-meta">
+                            <h4>Chris L.</h4>
+                            <div class="stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <p class="testimonial-text">"Estates delivered a seamless real estate experience for me, helping me find the perfect location. Their expertise and attention to detail were impressive, making the entire process smooth and efficient."</p>
+                    <div class="client-profile">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Alex M.">
+                        <div class="client-meta">
+                            <h4>Alex M.</h4>
+                            <div class="stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="blogs-section">
+            <div class="section-header-flex">
+                <h2>Our Blogs</h2>
+                <a href="#" class="view-all-btn">View All</a>
+            </div>
+            
+            <div class="blogs-grid">
+                <div class="blog-card">
+                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=2670&auto=format&fit=crop" alt="Buying Tips">
+                    <div class="blog-overlay">
+                        <div class="blog-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Sep 27, 2025</span>
+                            <span><i class="fa-solid fa-tag"></i> Buying Tips</span>
+                        </div>
+                        <h3 class="blog-title">Top 10 Tips for First-Time Home Buyers</h3>
+                    </div>
+                </div>
+
+                <div class="blog-card">
+                    <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?q=80&w=2670&auto=format&fit=crop" alt="Selling Tips">
+                    <div class="blog-overlay">
+                        <div class="blog-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Sep 27, 2025</span>
+                            <span><i class="fa-solid fa-tag"></i> Selling Tips</span>
+                        </div>
+                        <h3 class="blog-title">How to Stage Your Home for a Quick Sale</h3>
+                    </div>
+                </div>
+
+                <div class="blog-card">
+                    <img src="https://images.unsplash.com/photo-1611974765270-ca1258634369?q=80&w=2664&auto=format&fit=crop" alt="Market Insights">
+                    <div class="blog-overlay">
+                        <div class="blog-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Sep 27, 2025</span>
+                            <span><i class="fa-solid fa-chart-line"></i> Market Insights</span>
+                        </div>
+                        <h3 class="blog-title">Understanding Real Estate Market Trends in 2025</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="site-footer">
+            <div class="copyright">All Rights Reserved. Estates 2024</div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms & Conditions</a>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // --- 1. Initialize Lenis (Smooth Scroll) ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+
+        requestAnimationFrame(raf);
+
+        // Connect Lenis to GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // --- 2. Hero Animations ---
+        const heroTl = gsap.timeline();
+        
+        heroTl.from('.hero-bg', {
+            scale: 1.2,
+            duration: 2,
+            ease: 'power2.out'
+        })
+        .from('.hero-title', {
+            y: 100,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out'
+        }, '-=1.5')
+        .from('.subtext', {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out'
+        }, '-=0.8')
+        .from('.cta-group .btn', {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'back.out(1.7)'
+        }, '-=0.8')
+        .from('.floating-controls', {
+            x: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out'
+        }, '-=1');
+
+        // Parallax Effect for Hero Background
+        gsap.to('.hero-bg', {
+            yPercent: 30,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.hero-section',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+
+        // --- 3. Stats Section Animations ---
+        gsap.from('.stat-card', {
+            scrollTrigger: {
+                trigger: '.stats-section',
+                start: 'top 80%',
+            },
+            y: 100,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.2,
+            ease: 'power3.out'
+        });
+
+        // Counter Animation for Revenue
+        const statNumber = document.querySelector('.stat-number');
+        // Simple counter animation
+        if(statNumber) {
+            let obj = { val: 0 };
+            gsap.to(obj, {
+                val: 100,
+                duration: 2,
+                scrollTrigger: {
+                    trigger: '.stat-card.revenue',
+                    start: 'top 80%',
+                },
+                ease: 'power1.out',
+                onUpdate: function() {
+                    statNumber.innerHTML = Math.floor(obj.val) + 'M+';
+                }
+            });
+        }
+
+        // --- 4. Listings Animations ---
+        gsap.utils.toArray('.listing-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                },
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                delay: i * 0.1, // Stagger effect manually if needed, or use stagger property in batch
+                ease: 'power3.out'
+            });
+        });
+
+        // --- 5. "We Are" Services Animation ---
+        gsap.from('.service-item', {
+            scrollTrigger: {
+                trigger: '.services-list',
+                start: 'top 80%',
+            },
+            x: -50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: 'power2.out'
+        });
+
+        // --- 6. Clients & Blogs Animations ---
+        const animateCards = (selector) => {
+            gsap.from(selector, {
+                scrollTrigger: {
+                    trigger: selector,
+                    start: 'top 85%',
+                },
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.2,
+                ease: 'power3.out'
+            });
+        };
+
+        animateCards('.client-card');
+        animateCards('.blog-card');
+
+        // --- 7. Section Headings ---
+        gsap.utils.toArray('.section-heading, .section-header-flex h2').forEach(heading => {
+            gsap.from(heading, {
+                scrollTrigger: {
+                    trigger: heading,
+                    start: 'top 90%',
+                },
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out'
+            });
+        });
+
+        // --- Dark Mode Toggle ---
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            
+            const icon = document.querySelector('.control-btn .fa-moon, .control-btn .fa-sun');
+            if(document.body.classList.contains('dark-mode')){
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+    </script>
+</body>
+</html>
