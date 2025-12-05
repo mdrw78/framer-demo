@@ -161,47 +161,52 @@
             width: calc(100% - 280px);
             display: flex;
             flex-direction: column;
-            gap: 60px; /* Consistent large gap between sections */
-            padding: 20px 40px 40px 40px;
+            gap: 120px; /* Increased gap for better spacing */
+            padding: 20px 40px 60px 40px;
         }
 
         /* Generic Section Title Style */
         .section-heading {
-            font-size: 3.5rem;
+            font-size: 4rem; /* Larger for impact */
             font-weight: 700;
-            margin-bottom: 30px;
+            margin-bottom: 50px;
             color: var(--text-main);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
         }
         
         /* Flex header for sections with "View All" button */
         .section-header-flex {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+            align-items: flex-end;
+            margin-bottom: 50px;
         }
         
         .section-header-flex h2 {
-            font-size: 3.5rem;
+            font-size: 4rem;
             font-weight: 700;
             color: var(--text-main);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
+            line-height: 1;
         }
 
         .view-all-btn {
-            background-color: #1a1a1a;
-            color: white;
-            padding: 10px 24px;
+            background-color: var(--btn-dark);
+            color: var(--btn-light);
+            padding: 12px 28px;
             border-radius: 50px;
             text-decoration: none;
             font-size: 0.9rem;
             font-weight: 600;
-            transition: background-color 0.2s ease;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
         
         .view-all-btn:hover {
-            background-color: #333;
+            background-color: transparent;
+            color: var(--text-main);
+            border-color: var(--text-main);
+            transform: translateY(-2px);
         }
 
         /* --- 1. Hero Section --- */
@@ -220,13 +225,14 @@
 
         .video-background {
             position: absolute;
-            top: 0;
+            top: -15%; /* Start higher to allow parallax movement */
             left: 0;
             width: 100%;
-            height: 100%;
+            height: 130%; /* Taller than container to prevent black bars */
             z-index: 1;
             overflow: hidden;
             pointer-events: none;
+            will-change: transform;
         }
 
         .video-background iframe {
@@ -235,8 +241,8 @@
             left: 50%;
             width: 100vw;
             height: 56.25vw; /* 16:9 Aspect Ratio */
-            min-height: 100vh;
-            min-width: 177.77vh; /* 16:9 Aspect Ratio */
+            min-height: 130vh; /* Ensure it covers the taller container */
+            min-width: 231.11vh; /* Maintain aspect ratio for taller height */
             transform: translate(-50%, -50%);
             pointer-events: none;
         }
@@ -616,49 +622,61 @@
             opacity: 0.8;
         }
 
-        /* --- 5. "Our Clients" Section --- */
+        /* --- 5. "Our Clients" Section (Marquee) --- */
         .clients-section {
             width: 100%;
             flex-shrink: 0;
+            overflow: hidden; /* Hide overflow for marquee */
+            padding: 20px 0;
         }
 
-        .clients-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .clients-marquee-wrapper {
+            width: 100%;
+            position: relative;
+            mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+        }
+
+        .clients-track {
+            display: flex;
             gap: 30px;
+            width: max-content;
+            padding: 20px 0;
+            /* Hover state for the container triggers blur on all children */
         }
         
-        /* --- Micro-Interaction: Testimonial Focus --- */
-        .clients-grid:hover .client-card {
-            opacity: 0.5;
-            filter: blur(2px);
-            transform: scale(0.98);
+        .clients-track:hover .client-card {
+            opacity: 0.3;
+            filter: blur(3px);
+            transform: scale(0.95);
         }
-        
-        .clients-grid:hover .client-card:hover {
+
+        .clients-track .client-card:hover {
             opacity: 1;
             filter: blur(0);
-            transform: scale(1.02) translateY(-5px);
-            z-index: 2;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border-color: var(--text-main);
         }
 
         .client-card {
             background: var(--card-bg-light);
             border-radius: 30px;
-            padding: 35px;
+            padding: 40px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 300px;
+            height: 350px;
+            width: 400px; /* Fixed width for marquee */
+            flex-shrink: 0;
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 1px solid transparent;
+            will-change: transform, filter; /* Optimization for smooth animation */
         }
-        
-        /* Removed old hover to avoid conflict */
-        /* .client-card:hover { transform: translateY(-5px); } */
 
         .testimonial-text {
-            font-size: 1rem;
+            font-size: 1.1rem;
             line-height: 1.6;
             color: var(--text-secondary);
             margin-bottom: 25px;
@@ -1005,54 +1023,91 @@
 
         <section class="clients-section">
             <h2 class="section-heading">Our Clients</h2>
-            <div class="clients-grid">
-                
-                <div class="client-card">
-                    <p class="testimonial-text">"Estates provided me with an exceptional real estate solution that perfectly aligned with my high standards and ambitious goals. Their team was professional, forward-thinking, and delivered exactly what I needed."</p>
-                    <div class="client-profile">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Sarah G.">
-                        <div class="client-meta">
-                            <h4>Sarah G.</h4>
-                            <div class="stars">
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
+            <div class="clients-marquee-wrapper">
+                <div class="clients-track">
+                    <!-- Original Cards -->
+                    <div class="client-card">
+                        <p class="testimonial-text">"Estates provided me with an exceptional real estate solution that perfectly aligned with my high standards and ambitious goals. Their team was professional, forward-thinking, and delivered exactly what I needed."</p>
+                        <div class="client-profile">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Sarah G.">
+                            <div class="client-meta">
+                                <h4>Sarah G.</h4>
+                                <div class="stars">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="client-card">
-                    <p class="testimonial-text">"Estates provided exceptional service in helping me secure the ideal location. Their expertise and commitment to finding the right fit made the process straightforward and efficient. I highly recommend Estates."</p>
-                    <div class="client-profile">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Chris L.">
-                        <div class="client-meta">
-                            <h4>Chris L.</h4>
-                            <div class="stars">
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
+                    <div class="client-card">
+                        <p class="testimonial-text">"Estates provided exceptional service in helping me secure the ideal location. Their expertise and commitment to finding the right fit made the process straightforward and efficient. I highly recommend Estates."</p>
+                        <div class="client-profile">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Chris L.">
+                            <div class="client-meta">
+                                <h4>Chris L.</h4>
+                                <div class="stars">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="client-card">
-                    <p class="testimonial-text">"Estates delivered a seamless real estate experience for me, helping me find the perfect location. Their expertise and attention to detail were impressive, making the entire process smooth and efficient."</p>
-                    <div class="client-profile">
-                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Alex M.">
-                        <div class="client-meta">
-                            <h4>Alex M.</h4>
-                            <div class="stars">
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
+                    <div class="client-card">
+                        <p class="testimonial-text">"Estates delivered a seamless real estate experience for me, helping me find the perfect location. Their expertise and attention to detail were impressive, making the entire process smooth and efficient."</p>
+                        <div class="client-profile">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Alex M.">
+                            <div class="client-meta">
+                                <h4>Alex M.</h4>
+                                <div class="stars">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Duplicated Cards for Marquee -->
+                    <div class="client-card">
+                        <p class="testimonial-text">"The attention to detail and personalized service I received was outstanding. They truly understood my vision and helped me find a property that exceeded my expectations in every way."</p>
+                        <div class="client-profile">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Emily R.">
+                            <div class="client-meta">
+                                <h4>Emily R.</h4>
+                                <div class="stars">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="client-card">
+                        <p class="testimonial-text">"Professionalism at its finest. The team guided me through every step of the investment process, ensuring I made informed decisions. The results speak for themselves."</p>
+                        <div class="client-profile">
+                            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150&auto=format&fit=crop" class="client-avatar" alt="Michael B.">
+                            <div class="client-meta">
+                                <h4>Michael B.</h4>
+                                <div class="stars">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1252,29 +1307,48 @@
                 });
 
                 // --- 6. Clients & Blogs Animations ---
-                const animateCards = (selector) => {
-                    gsap.from(selector, {
-                        scrollTrigger: {
-                            trigger: selector,
-                            start: 'top 85%',
-                        },
-                        y: 50,
-                        opacity: 0,
-                        duration: 1,
-                        stagger: 0.2,
-                        ease: 'power3.out'
+                // Marquee Animation for Clients
+                const clientTrack = document.querySelector('.clients-track');
+                if (clientTrack) {
+                    // Clone children for seamless loop
+                    const clientCards = gsap.utils.toArray('.client-card');
+                    clientCards.forEach(card => {
+                        const clone = card.cloneNode(true);
+                        clientTrack.appendChild(clone);
                     });
-                };
 
-                animateCards('.client-card');
-                animateCards('.blog-card');
+                    // Auto-scroll animation
+                    const marqueeTl = gsap.to(clientTrack, {
+                        xPercent: -50,
+                        ease: "none",
+                        duration: 40, // Adjust speed here
+                        repeat: -1
+                    });
+
+                    // Pause on hover
+                    clientTrack.addEventListener('mouseenter', () => marqueeTl.pause());
+                    clientTrack.addEventListener('mouseleave', () => marqueeTl.play());
+                }
+
+                // Blogs Animation
+                gsap.from('.blog-card', {
+                    scrollTrigger: {
+                        trigger: '.blogs-section',
+                        start: 'top 90%', // Trigger earlier
+                    },
+                    y: 50,
+                    opacity: 0,
+                    duration: 1,
+                    stagger: 0.2,
+                    ease: 'power3.out'
+                });
 
                 // --- 7. Section Headings ---
                 gsap.utils.toArray('.section-heading, .section-header-flex h2').forEach(heading => {
                     gsap.from(heading, {
                         scrollTrigger: {
                             trigger: heading,
-                            start: 'top 90%',
+                            start: 'top 90%', // Trigger earlier
                         },
                         y: 30,
                         opacity: 0,
@@ -1354,10 +1428,10 @@
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
             
             // Parallax Effect for Video
-            // "when we scroll we go down in the webpage but the drone camera's angl;es comes up"
-            // We move the video container slightly UP as we scroll DOWN to enhance the feeling
+            // We move the video container DOWN (positive y) as we scroll DOWN
+            // This creates a depth effect where the background moves slower than the foreground
             gsap.to('.video-background', {
-                yPercent: -20, 
+                yPercent: 20, 
                 ease: 'none',
                 scrollTrigger: {
                     trigger: '.hero-section',
