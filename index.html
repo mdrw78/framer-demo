@@ -15,8 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/lenis@1.0.45/dist/lenis.min.js"></script>
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- YouTube API will be loaded asynchronously -->
 
     <style>
         /* --- CSS Reset & Base Styles --- */
@@ -36,6 +35,34 @@
             --card-bg-light: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             --pill-bg: #f3f3f3;
             --pill-bg-hover: #e2e2e2;
+        }
+
+        /* --- Micro-Interaction: Text Selection --- */
+        ::selection {
+            background: var(--text-main);
+            color: var(--bg-sidebar);
+        }
+
+        /* --- Micro-Interaction: Custom Cursor --- */
+        .cursor-dot {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: black;
+            transition: transform 0.2s ease;
         }
 
         body {
@@ -82,13 +109,34 @@
         .nav-links li a {
             text-decoration: none;
             color: var(--text-nav);
-            transition: color 0.3s;
+            transition: color 0.3s, transform 0.3s ease;
             font-weight: 400;
+            display: inline-block;
+            position: relative;
+        }
+
+        /* --- Micro-Interaction: Nav Hover Reveal --- */
+        .nav-links li a::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%) scale(0);
+            width: 6px;
+            height: 6px;
+            background-color: var(--text-main);
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .nav-links li a:hover {
-            color: #000;
+            color: var(--text-main);
             font-weight: 600;
+            transform: translateX(10px);
+        }
+
+        .nav-links li a:hover::before {
+            transform: translateY(-50%) scale(1);
         }
 
         .socials {
@@ -167,16 +215,30 @@
             justify-content: center;
             overflow: hidden;
             flex-shrink: 0;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%); /* Fallback */
+            background: #000;
         }
 
-        #canvas-container {
+        .video-background {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .video-background iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 56.25vw; /* 16:9 Aspect Ratio */
+            min-height: 100vh;
+            min-width: 177.77vh; /* 16:9 Aspect Ratio */
+            transform: translate(-50%, -50%);
+            pointer-events: none;
         }
 
         .hero-overlay {
@@ -240,9 +302,21 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, background-color 0.3s ease, color 0.3s ease;
             cursor: pointer;
             border: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* --- Micro-Interaction: Button Arrow Loop --- */
+        .btn i {
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .btn:hover i {
+            transform: translateX(5px);
         }
 
         .btn:hover {
@@ -254,10 +328,29 @@
             color: white;
             border: 1px solid rgba(255,255,255,0.2);
         }
-
+        
+        /* --- Micro-Interaction: Button Fill Effect --- */
         .btn-light {
             background-color: white;
             color: #1a1a1a;
+        }
+        
+        .btn-light::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #e0e0e0;
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        
+        .btn-light:hover::before {
+            transform: scaleX(1);
         }
 
         .floating-controls {
@@ -480,12 +573,35 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.2s;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
         }
         
+        /* --- Micro-Interaction: Service Glow --- */
         .service-item:hover {
             background-color: var(--pill-bg-hover);
-            transform: scale(1.01);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        
+        .service-item::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+        }
+        
+        .service-item:hover::after {
+            opacity: 1;
+            transform: scale(1);
         }
         
         .service-text {
@@ -511,6 +627,21 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 30px;
         }
+        
+        /* --- Micro-Interaction: Testimonial Focus --- */
+        .clients-grid:hover .client-card {
+            opacity: 0.5;
+            filter: blur(2px);
+            transform: scale(0.98);
+        }
+        
+        .clients-grid:hover .client-card:hover {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1.02) translateY(-5px);
+            z-index: 2;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
 
         .client-card {
             background: var(--card-bg-light);
@@ -520,12 +651,11 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: 300px;
-            transition: transform 0.2s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
-        .client-card:hover {
-            transform: translateY(-5px);
-        }
+        /* Removed old hover to avoid conflict */
+        /* .client-card:hover { transform: translateY(-5px); } */
 
         .testimonial-text {
             font-size: 1rem;
@@ -751,6 +881,8 @@
     </style>
 </head>
 <body class="dark-mode">
+    <!-- Custom Cursor Element -->
+    <div class="cursor-dot">View</div>
 
     <aside class="sidebar">
         <div class="logo">KING'S</div>
@@ -773,7 +905,9 @@
 
     <main class="main-content">
         <section class="hero-section">
-            <div id="canvas-container"></div>
+            <div class="video-background">
+                <div id="youtube-player"></div>
+            </div>
             <div class="hero-overlay"></div>
             <div class="hero-content">
                 <h1 class="hero-title">The Gateway to Prime Properties</h1>
@@ -1150,8 +1284,8 @@
                 });
             }
 
-            // Initialize 3D after a short delay to ensure layout
-            setTimeout(initThreeJS, 100);
+            // Initialize YouTube Video Background
+            initYouTubeBackground();
         });
 
         // --- Dark Mode Toggle ---
@@ -1168,170 +1302,172 @@
             }
         }
 
-        // --- 8. Three.js 3D House Animation ---
-        function initThreeJS() {
-            const container = document.getElementById('canvas-container');
-            if (!container) {
-                console.error("Canvas container not found!");
-                return;
-            }
+        // --- 8. YouTube Video Background ---
+        // Replace this ID with your video ID
+        const YOUTUBE_VIDEO_ID = 'GF8jcPpCjPM'; 
+        const START_TIME = 580; // 9:40
+        const END_TIME = 600;   // 10:00
 
-            // Wait for container to have dimensions
-            if (container.clientWidth === 0 || container.clientHeight === 0) {
-                console.log("Container has 0 dimensions, retrying...");
-                setTimeout(initThreeJS, 100);
-                return;
-            }
-
-            const scene = new THREE.Scene();
-            // scene.background = new THREE.Color(0x111111); // Optional: Set scene background directly
-
-            const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 2, 12); // Moved back a bit
-            camera.lookAt(0, 1, 0);
-
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimize for high DPI
-            container.appendChild(renderer.domElement);
-
-            // --- Lights ---
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-            scene.add(ambientLight);
-
-            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-            dirLight.position.set(5, 10, 7);
-            scene.add(dirLight);
-
-            const pointLight = new THREE.PointLight(0x3366ff, 2, 20); // Blueish
-            pointLight.position.set(-5, 5, 5);
-            scene.add(pointLight);
-            
-            const pointLight2 = new THREE.PointLight(0xffaa33, 2, 20); // Orangeish
-            pointLight2.position.set(5, -5, 5);
-            scene.add(pointLight2);
-
-            // --- House Group ---
-            const houseGroup = new THREE.Group();
-            houseGroup.position.x = 3.5; // Shift house to the right
-            scene.add(houseGroup);
-
-            // Materials - Made more visible
-            const glassMaterial = new THREE.MeshPhysicalMaterial({
-                color: 0xffffff,
-                metalness: 0.2,
-                roughness: 0.1,
-                transmission: 0.2, // Less transparent to be more visible
-                transparent: true,
-                opacity: 0.9,
-                side: THREE.DoubleSide,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.1
-            });
-
-            const frameMaterial = new THREE.MeshBasicMaterial({ 
-                color: 0xffffff, 
-                wireframe: true,
-                transparent: true,
-                opacity: 0.5
-            });
-
-            // 1. Main Body
-            const bodyGeo = new THREE.BoxGeometry(5, 3.5, 5);
-            const bodyMesh = new THREE.Mesh(bodyGeo, glassMaterial);
-            const bodyFrame = new THREE.Mesh(bodyGeo, frameMaterial);
-            bodyMesh.position.y = 1.75;
-            bodyFrame.position.y = 1.75;
-            houseGroup.add(bodyMesh);
-            houseGroup.add(bodyFrame);
-
-            // 2. Roof
-            const roofGeo = new THREE.ConeGeometry(4.5, 2.5, 4);
-            const roofMesh = new THREE.Mesh(roofGeo, glassMaterial);
-            const roofFrame = new THREE.Mesh(roofGeo, frameMaterial);
-            roofMesh.position.y = 4.75;
-            roofMesh.rotation.y = Math.PI / 4; // Align with box
-            roofFrame.position.y = 4.75;
-            roofFrame.rotation.y = Math.PI / 4;
-            houseGroup.add(roofMesh);
-            houseGroup.add(roofFrame);
-
-            // 3. Floor/Platform
-            const floorGeo = new THREE.BoxGeometry(7, 0.2, 7);
-            const floorMesh = new THREE.Mesh(floorGeo, new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5 }));
-            floorMesh.position.y = -0.1;
-            houseGroup.add(floorMesh);
-
-            // 4. Floating Particles
-            const particlesGeo = new THREE.BufferGeometry();
-            const particleCount = 300;
-            const posArray = new Float32Array(particleCount * 3);
-            
-            for(let i = 0; i < particleCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 20;
-            }
-            
-            particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const particlesMat = new THREE.PointsMaterial({
-                size: 0.08,
-                color: 0xffffff,
-                transparent: true,
-                opacity: 0.6
-            });
-            const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
-            scene.add(particlesMesh);
-
-            // --- Animation Loop ---
-            let mouseX = 0;
-            let mouseY = 0;
-            let targetRotationX = 0;
-            let targetRotationY = 0;
-
-            // Mouse interaction
-            document.addEventListener('mousemove', (event) => {
-                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                mouseY = (event.clientY / window.innerHeight) * 2 - 1;
-            });
-
-            const clock = new THREE.Clock();
-
-            function animate() {
-                requestAnimationFrame(animate);
-                
-                const elapsedTime = clock.getElapsedTime();
-
-                // Gentle float
-                houseGroup.position.y = Math.sin(elapsedTime * 0.5) * 0.3;
-
-                // Mouse rotation with damping
-                targetRotationY = mouseX * 0.3;
-                targetRotationX = mouseY * 0.1;
-                
-                houseGroup.rotation.y += 0.05 * (targetRotationY - houseGroup.rotation.y);
-                houseGroup.rotation.x += 0.05 * (targetRotationX - houseGroup.rotation.x);
-                
-                // Constant slow rotation
-                houseGroup.rotation.y += 0.003;
-
-                // Particles rotation
-                particlesMesh.rotation.y = -elapsedTime * 0.05;
-
-                renderer.render(scene, camera);
-            }
-
-            animate();
-
-            // Handle Resize
-            window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                videoId: YOUTUBE_VIDEO_ID,
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,
+                    'showinfo': 0,
+                    'modestbranding': 1,
+                    'loop': 1,
+                    'fs': 0,
+                    'cc_load_policy': 0,
+                    'iv_load_policy': 3,
+                    'autohide': 0,
+                    'playlist': YOUTUBE_VIDEO_ID,
+                    'start': START_TIME,
+                    'end': END_TIME,
+                    'mute': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
             });
         }
 
-        // Initialize after DOM load
-        // Use setTimeout to ensure layout is ready
-        setTimeout(initThreeJS, 100);
+        function onPlayerReady(event) {
+            event.target.mute();
+            event.target.playVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                player.seekTo(START_TIME);
+                player.playVideo();
+            }
+        }
+
+        function initYouTubeBackground() {
+            // Load YouTube IFrame API
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            
+            // Parallax Effect for Video
+            // "when we scroll we go down in the webpage but the drone camera's angl;es comes up"
+            // We move the video container slightly UP as we scroll DOWN to enhance the feeling
+            gsap.to('.video-background', {
+                yPercent: -20, 
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '.hero-section',
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: true
+                }
+            });
+        }
+
+        // --- 9. Micro-Interactions (New) ---
+        
+        // A. Magnetic Social Icons
+        const socials = document.querySelectorAll('.socials i');
+        socials.forEach(icon => {
+            icon.addEventListener('mousemove', (e) => {
+                const rect = icon.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                gsap.to(icon, {
+                    x: x * 0.5,
+                    y: y * 0.5,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            });
+            
+            icon.addEventListener('mouseleave', () => {
+                gsap.to(icon, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.5,
+                    ease: 'elastic.out(1, 0.3)'
+                });
+            });
+        });
+
+        // B. Custom Cursor Logic
+        const cursor = document.querySelector('.cursor-dot');
+        const hoverTargets = document.querySelectorAll('.listing-card, .blog-card');
+        
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.1,
+                ease: 'power2.out'
+            });
+        });
+
+        hoverTargets.forEach(target => {
+            target.addEventListener('mouseenter', () => {
+                gsap.to(cursor, { scale: 1, duration: 0.3 });
+            });
+            target.addEventListener('mouseleave', () => {
+                gsap.to(cursor, { scale: 0, duration: 0.3 });
+            });
+            
+            // C. Card Parallax Effect
+            const img = target.querySelector('img');
+            target.addEventListener('mousemove', (e) => {
+                const rect = target.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                
+                gsap.to(img, {
+                    x: -x * 20, // Move opposite to mouse
+                    y: -y * 20,
+                    scale: 1.1, // Keep slightly zoomed to avoid edges
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            });
+            
+            target.addEventListener('mouseleave', () => {
+                gsap.to(img, {
+                    x: 0,
+                    y: 0,
+                    scale: 1,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            });
+        });
+
+        // D. Service Icon Animations
+        const serviceItems = document.querySelectorAll('.service-item');
+        serviceItems.forEach(item => {
+            const icon = item.querySelector('.service-icon');
+            
+            item.addEventListener('mouseenter', () => {
+                if(icon.classList.contains('fa-comments')) {
+                    gsap.to(icon, { scale: 1.2, rotation: 10, yoyo: true, repeat: 1, duration: 0.2 });
+                } else if(icon.classList.contains('fa-cart-shopping')) {
+                    gsap.to(icon, { x: 5, yoyo: true, repeat: 3, duration: 0.1 });
+                } else if(icon.classList.contains('fa-handshake')) {
+                    gsap.to(icon, { rotation: -15, yoyo: true, repeat: 1, duration: 0.3 });
+                }
+            });
+        });
+
+        // E. Globe Rotation
+        gsap.to('.globe-graphic', {
+            rotation: 360,
+            duration: 20,
+            repeat: -1,
+            ease: 'none'
+        });
+
     </script>
 </body>
 </html>
