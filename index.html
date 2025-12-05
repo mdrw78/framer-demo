@@ -61,11 +61,12 @@
 
         .logo {
             font-family: 'Six Caps', sans-serif;
-            font-size: 8rem;
-            line-height: 0.8;
+            font-size: 10.2rem; /* Reduced to fit "LANDING" */
+            line-height: 0.9; /* Increased to prevent overlap */
             color: var(--text-main);
             letter-spacing: 2px;
             font-weight: 400;
+            margin-bottom: 20px;
         }
 
         .nav-links {
@@ -749,10 +750,10 @@
 
     </style>
 </head>
-<body>
+<body class="dark-mode">
 
     <aside class="sidebar">
-        <div class="logo">KING'S Landing</div>
+        <div class="logo">KING'S</div>
         
         <ul class="nav-links">
             <li><a href="#">Home</a></li>
@@ -789,7 +790,7 @@
 
             <div class="floating-controls">
                 <button class="control-btn" onclick="toggleDarkMode()">
-                    <i class="fa-solid fa-moon"></i> Dark Mode
+                    <i class="fa-solid fa-sun"></i> Dark Mode
                 </button>
             </div>
         </section>
